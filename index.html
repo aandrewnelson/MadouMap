@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>Madou Map</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+
+<script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0">
+</script>
+
+
+
+<style>
+#map {  width: 960px;
+        height: 500px;
+}
+</style>
+
+</head>
+
+<body>
+  <div id="map"></div>
+
+  <script src="./plugins/leaflet.ajax.min.js"></script>
+
+  <script>
+
+  var map = L.map('map',{
+    center: [23.1829, 120.26296],
+    zoom: 15
+  });
+
+  L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+  }).addTo(map);
+
+  var markerOptions = {
+    radius: 8,
+    fillColor: "#90cde7",
+    color: "#000",
+    fillOpacity: 0.9,
+    weight: 1
+  };
+
+  var samplepoints = L.geoJSON.ajax("./data/MadouData1.geojson", {
+        pointToLayer: function(feature, latlng) {
+          return new L.circleMarker(latlng, markerOptions);
+        },
+        onEachFeature: function(feature, layer){
+        layer.bindPopup("<p><strong>Sample Point: </strong>"+
+        feature.properties.Id +
+        "<br><strong>Coordinates: </strong>" + feature.properties.Latitutde + " N, " +
+        feature.properties.Longitude + " E</p>" +
+        "<p><strong>Temperature: </strong>" + feature.properties.MEAN_temp.toFixed(2) +
+          "&deg; F" +
+          "<br><strong> Humidity: </strong>" + feature.properties.MEAN_humid.toFixed(2) +
+          "%"+
+          "<br><strong> Soil Moisture: </strong>" + feature.properties.MEAN_soil_.toFixed(2) +
+        "</p>")
+      }
+  }).addTo(map);
+
+  </script>
+
+</body>
+</htmL>
