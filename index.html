@@ -25,7 +25,7 @@
 <body>
   <div id="map"></div>
 
-  <script src="./plugins/leaflet.ajax.min.js"></script>
+  <script src="leaflet.ajax.min.js"></script>
 
   <script>
 
@@ -46,7 +46,7 @@
     weight: 1
   };
 
-  var samplepoints = L.geoJSON.ajax("./data/MadouData1.geojson", {
+  var samplepoints = L.geoJSON.ajax("MadouData1.geojson", {
         pointToLayer: function(feature, latlng) {
           return new L.circleMarker(latlng, markerOptions);
         },
