@@ -98,9 +98,9 @@
   //Define basemap
   var map = L.map("map", {
   center: [23.1829, 120.26296],
-  zoom: 14,
+  zoom: 15,
   minZoom: 10,
-  maxZoon: 16,
+  maxZoon: 18,
   layers: [toner, samplePoints]
   });
 
@@ -122,7 +122,7 @@
 
   //Easy button - home button returns user to default location/view
   L.easyButton('fa-home fa-lg', function() {
-    map.setView([23.1829, 120.26296], 14),
+    map.setView([23.1829, 120.26296], 15),
     map.addLayer(samplePoints);
 }).addTo(map);
 
