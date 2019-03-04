@@ -4,40 +4,70 @@
 
 <head>
 
-<title>Madou Map</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0,
+  maximum-scale=1.0, user-scalable=no">
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+  <title>Sensor Sample Points: Madou, Taiwan</title>
 
-<script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0">
-</script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+
+  <script src="./plugins/leaflet.ajax.min.js"></script>
+
+  <!--load FontAwesome css for icons-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <!--Load Leaflet.EasyButton CSS and Plugin -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css" />
+  <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
 
 
 
-<style>
-#map {  width: 960px;
-        height: 500px;
-}
-</style>
+
+
+  <style>
+  #map {  width: 960px;
+          height: 500px;}
+  </style>
 
 </head>
 
 <body>
   <div id="map"></div>
 
-  <script src="leaflet.ajax.min.js"></script>
-
   <script>
 
-  var map = L.map('map',{
-    center: [23.1829, 120.26296],
-    zoom: 15
+  //Stamen Toner Tiles
+  var toner = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.{ext}', {
+	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	subdomains: 'abcd',
+	minZoom: 0,
+	maxZoom: 20,
+	ext: 'png'
   });
 
-  L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
-    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
-  }).addTo(map);
 
+  //Stamen Watercolor Tiles
+  var watercolor = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
+	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	subdomains: 'abcd',
+	minZoom: 1,
+	maxZoom: 20,
+	ext: 'jpg'
+  });
+
+  //Esri Topo Tiles
+  var esriTopo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+	attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+  });
+
+  //Esri World Imagery Tiles
+  var esriWorld = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+  });
+
+  //Define point marker symbology
   var markerOptions = {
     radius: 8,
     fillColor: "#90cde7",
@@ -46,14 +76,15 @@
     weight: 1
   };
 
-  var samplepoints = L.geoJSON.ajax("MadouData1.geojson", {
+  //Define sample point layer
+  var samplePoints = L.geoJSON.ajax("./data/MadouData1.geojson", {
         pointToLayer: function(feature, latlng) {
-          return new L.circleMarker(latlng, markerOptions);
+         return new L.circleMarker(latlng, markerOptions);
         },
         onEachFeature: function(feature, layer){
         layer.bindPopup("<p><strong>Sample Point: </strong>"+
         feature.properties.Id +
-        "<br><strong>Coordinates: </strong>" + feature.properties.Latitutde + " N, " +
+        "<br><strong>Location: </strong>" + feature.properties.Latitutde + " N, " +
         feature.properties.Longitude + " E</p>" +
         "<p><strong>Temperature: </strong>" + feature.properties.MEAN_temp.toFixed(2) +
           "&deg; F" +
@@ -62,7 +93,38 @@
           "<br><strong> Soil Moisture: </strong>" + feature.properties.MEAN_soil_.toFixed(2) +
         "</p>")
       }
-  }).addTo(map);
+  });
+
+  //Define basemap
+  var map = L.map("map", {
+  center: [23.1829, 120.26296],
+  zoom: 14,
+  minZoom: 10,
+  maxZoon: 16,
+  layers: [toner, samplePoints]
+  });
+
+  //Define basemap layers to be used in layer control
+  var baseMaps = {
+  "Toner": toner,
+  "Watercolor": watercolor,
+  "Esri World Topo": esriTopo,
+  "Esri World Imagery": esriWorld
+  };
+
+  //Define sample point layer to be used in layer control
+  var pointLayer = {
+    "Sample Points": samplePoints
+  };
+
+  //Layer control
+  L.control.layers(baseMaps, pointLayer).addTo(map);
+
+  //Easy button - home button returns user to default location/view
+  L.easyButton('fa-home fa-lg', function() {
+    map.setView([23.1829, 120.26296], 14),
+    map.addLayer(samplePoints);
+}).addTo(map);
 
   </script>
 
